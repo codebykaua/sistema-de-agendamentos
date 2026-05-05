@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ClinAgenda | Dashboard</title>
+
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Ícones Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+<body class="dashboard-page">
+
+  <main class="dashboard-container">
+
+    <!-- TOPO DO SISTEMA -->
+    <header class="dashboard-header">
+
+      <div class="dashboard-brand">
+        <div class="dashboard-logo">
+          <i class="fa-solid fa-shield-heart"></i>
+        </div>
+
+        <div>
+          <h1>ClinAgenda</h1>
+          <span>Sistema interno de agendamentos</span>
+        </div>
+      </div>
+
+      <div class="dashboard-user">
+        <div class="user-info">
+          <strong>Clínica Vida+</strong>
+          <span>Painel administrativo</span>
+        </div>
+
+        <button type="button" id="btnSair" class="btn-logout">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          Sair
+        </button>
+      </div>
+
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <section class="dashboard-main">
+
+      <!-- ÁREA ESQUERDA: BUSCA E LISTA -->
+      <section class="appointments-area">
+
+        <div class="section-title">
+          <div>
+            <h2>Agendamentos</h2>
+            <p>Pesquise e acompanhe os atendimentos da clínica.</p>
+          </div>
+
+          <span id="totalAgendamentos" class="total-badge">
+            0 agendamentos
+          </span>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters-card">
+
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+              type="text"
+              id="buscarAgendamento"
+              placeholder="Buscar por paciente, médico ou serviço"
+            />
+          </div>
+
+          <div class="filters-row">
+
+            <div class="filter-group">
+              <label for="filtroData">Data</label>
+              <input type="date" id="filtroData" />
+            </div>
+
+            <div class="filter-group">
+              <label for="filtroStatus">Status</label>
+              <select id="filtroStatus">
+                <option value="">Todos</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Confirmado">Confirmado</option>
+                <option value="Em atendimento">Em atendimento</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+            </div>
+
+            <button type="button" id="btnLimparFiltros" class="btn-clear">
+              <i class="fa-solid fa-filter-circle-xmark"></i>
+              Limpar
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- LISTA DE AGENDAMENTOS -->
+        <div id="listaAgendamentos" class="appointments-list">
+
+          <!-- Os agendamentos serão carregados pelo JavaScript -->
+
+          <div class="empty-state">
+            <i class="fa-regular fa-calendar-check"></i>
+            <h3>Nenhum agendamento encontrado</h3>
+            <p>Cadastre um novo agendamento no formulário ao lado.</p>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ÁREA DIREITA: NOVO AGENDAMENTO -->
+      <aside class="new-appointment-card">
+
+        <div class="form-title">
+          <div>
+            <h2>Novo agendamento</h2>
+            <p>Preencha os dados do atendimento.</p>
+          </div>
+
+          <div class="form-icon">
+            <i class="fa-solid fa-calendar-plus"></i>
+          </div>
+        </div>
+
+        <form id="formAgendamento" class="appointment-form">
+
+          <div class="form-group">
+            <label for="paciente">Paciente</label>
+            <input
+              type="text"
+              id="paciente"
+              name="paciente"
+              placeholder="Nome do paciente"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="medico">Médico</label>
+            <input
+              type="text"
+              id="medico"
+              name="medico"
+              placeholder="Nome do médico"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="servico">Serviço</label>
+            <input
+              type="text"
+              id="servico"
+              name="servico"
+              placeholder="Ex: Consulta de rotina"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+
+            <div class="form-group">
+              <label for="data">Data</label>
+              <input
+                type="date"
+                id="data"
+                name="data"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="horario">Horário</label>
+              <input
+                type="time"
+                id="horario"
+                name="horario"
+                required
+              />
+            </div>
+
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+              <option value="Pendente">Pendente</option>
+              <option value="Confirmado">Confirmado</option>
+              <option value="Em atendimento">Em atendimento</option>
+              <option value="Finalizado">Finalizado</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="observacao">Observação</label>
+            <textarea
+              id="observacao"
+              name="observacao"
+              placeholder="Observações sobre o atendimento"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn-save">
+            <i class="fa-solid fa-check"></i>
+            Confirmar agendamento
+          </button>
+
+          <p id="mensagemDashboard" class="mensagem-dashboard"></p>
+
+        </form>
+
+      </aside>
+
+    </section>
+
+  </main>
+
+  <!-- Firebase e lógica da dashboard -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="dashboard.js"></script>
+
+</body>
+</html>
