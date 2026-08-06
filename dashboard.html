@@ -29,20 +29,32 @@
 
         <div>
           <h1>ClinAgenda</h1>
-          <span>Sistema interno de agendamentos</span>
+          <span>Demonstração de sistema interno de agendamentos</span>
         </div>
       </div>
 
       <div class="dashboard-user">
-        <div class="user-info">
-          <strong>Clínica Vida+</strong>
-          <span>Painel administrativo</span>
+        <div class="local-storage-badge" title="Os dados desta demonstração ficam neste navegador">
+          <i class="fa-solid fa-hard-drive"></i>
+          Dados locais
         </div>
 
-        <button type="button" id="btnSair" class="btn-logout">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          Sair
-        </button>
+        <div class="user-info">
+          <strong id="nomeClinica">Clínica Vida+</strong>
+          <span id="nomeUsuario">Painel administrativo</span>
+        </div>
+
+        <div class="header-actions">
+          <button type="button" id="btnRestaurarDemo" class="btn-reset-demo">
+            <i class="fa-solid fa-rotate-left"></i>
+            Restaurar demo
+          </button>
+
+          <button type="button" id="btnSair" class="btn-logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            Sair
+          </button>
+        </div>
       </div>
 
     </header>
@@ -228,9 +240,9 @@
 
   </main>
 
-  <!-- Firebase e lógica da dashboard -->
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="dashboard.js"></script>
+  <!-- Banco local e lógica da dashboard -->
+  <script src="storage.js"></script>
+  <script src="dashboard.js"></script>
 
 </body>
 </html>

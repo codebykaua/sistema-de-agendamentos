@@ -28,8 +28,8 @@
 
         <p class="visual-description">
           Uma plataforma estruturada para elevar o padrão de atendimento
-          clínico. Organize agendas, prontuários e fluxos com precisão e
-          segurança institucional.
+          clínico. Organize agendas, atendimentos e fluxos com precisão e
+          uma experiência profissional.
         </p>
 
         <div class="visual-icons">
@@ -70,7 +70,24 @@
 
         <div class="login-header">
           <h2>Acessar painel</h2>
-          <p>Entre com seu e-mail e senha para acessar o sistema.</p>
+          <p>Entre com o acesso de demonstração para testar o sistema.</p>
+        </div>
+
+        <div class="demo-access" aria-label="Credenciais de demonstração">
+          <div class="demo-access-title">
+            <i class="fa-solid fa-flask"></i>
+            <strong>Acesso para demonstração</strong>
+          </div>
+
+          <div class="demo-credentials">
+            <span><strong>E-mail:</strong> admin@clinagenda.com.br</span>
+            <span><strong>Senha:</strong> ClinAgenda@2026</span>
+          </div>
+
+          <button type="button" id="btnPreencherDemo" class="btn-demo-fill">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Preencher acesso
+          </button>
         </div>
 
         <form id="loginForm" class="login-form">
@@ -131,14 +148,14 @@
 
       <div class="login-footer">
         <i class="fa-solid fa-shield-halved"></i>
-        <span>Uso exclusivo da clínica</span>
+        <span>Projeto demonstrativo para portfólio</span>
       </div>
     </section>
   </main>
 
-  <!-- Firebase e lógica do login -->
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="login.js"></script>
+  <!-- Armazenamento e autenticação local para demonstração -->
+  <script src="storage.js"></script>
+  <script src="login.js"></script>
 
 </body>
 </html>

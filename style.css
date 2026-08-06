@@ -858,3 +858,137 @@ a {
     align-items: flex-start;
   }
 }
+/* =========================
+   MODO DEMONSTRAÇÃO LOCAL
+========================= */
+
+.demo-access {
+  margin: -14px 0 24px;
+  padding: 15px;
+  border: 1px solid #cfe0ee;
+  border-radius: 12px;
+  background: #f3f8fc;
+}
+
+.demo-access-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--azul-principal);
+  font-size: 14px;
+  margin-bottom: 9px;
+}
+
+.demo-credentials {
+  display: grid;
+  gap: 4px;
+  color: #475569;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.btn-demo-fill {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 12px;
+  border: 1px solid #b7cfe1;
+  border-radius: 9px;
+  background: var(--branco);
+  color: var(--azul-principal);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.2s ease;
+}
+
+.btn-demo-fill:hover {
+  border-color: var(--azul-principal);
+  background: #e8f3fb;
+}
+
+.btn-login:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.local-storage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #edf7f2;
+  color: #18754c;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.btn-reset-demo,
+.btn-logout {
+  min-height: 40px;
+  border-radius: 11px;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.btn-reset-demo {
+  border: 1px solid #d7dee8;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.btn-reset-demo:hover {
+  background: #edf2f7;
+  color: var(--azul-principal);
+}
+
+.mensagem-dashboard[data-tipo="erro"] {
+  color: var(--vermelho);
+}
+
+.mensagem-dashboard[data-tipo="sucesso"] {
+  color: var(--verde);
+}
+
+@media (max-width: 900px) {
+  .dashboard-user {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .btn-reset-demo,
+  .btn-logout {
+    flex: 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .local-storage-badge {
+    white-space: normal;
+  }
+}

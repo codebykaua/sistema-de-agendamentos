@@ -1,330 +1,273 @@
-import { auth, db } from "./firebase.js";
+(function () {
+  "use strict";
 
-import {
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  const storage = window.ClinAgendaStorage;
 
-import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  query,
-  orderBy,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// Elementos principais
-const btnSair = document.getElementById("btnSair");
-const totalAgendamentos = document.getElementById("totalAgendamentos");
-const buscarAgendamento = document.getElementById("buscarAgendamento");
-const filtroData = document.getElementById("filtroData");
-const filtroStatus = document.getElementById("filtroStatus");
-const btnLimparFiltros = document.getElementById("btnLimparFiltros");
-const listaAgendamentos = document.getElementById("listaAgendamentos");
-
-// Formulário
-const formAgendamento = document.getElementById("formAgendamento");
-const pacienteInput = document.getElementById("paciente");
-const medicoInput = document.getElementById("medico");
-const servicoInput = document.getElementById("servico");
-const dataInput = document.getElementById("data");
-const horarioInput = document.getElementById("horario");
-const statusInput = document.getElementById("status");
-const observacaoInput = document.getElementById("observacao");
-const mensagemDashboard = document.getElementById("mensagemDashboard");
-
-// Lista local
-let agendamentos = [];
-
-// Proteger dashboard
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "index.html";
+  if (!storage || !storage.initialize()) {
+    alert("O navegador bloqueou o armazenamento local deste projeto.");
+    window.location.replace("index.html");
     return;
   }
+
+  const session = storage.getSession();
+
+  if (!session) {
+    window.location.replace("index.html");
+    return;
+  }
+
+  const btnSair = document.getElementById("btnSair");
+  const btnRestaurarDemo = document.getElementById("btnRestaurarDemo");
+  const totalAgendamentos = document.getElementById("totalAgendamentos");
+  const buscarAgendamento = document.getElementById("buscarAgendamento");
+  const filtroData = document.getElementById("filtroData");
+  const filtroStatus = document.getElementById("filtroStatus");
+  const btnLimparFiltros = document.getElementById("btnLimparFiltros");
+  const listaAgendamentos = document.getElementById("listaAgendamentos");
+  const nomeClinica = document.getElementById("nomeClinica");
+  const nomeUsuario = document.getElementById("nomeUsuario");
+
+  const formAgendamento = document.getElementById("formAgendamento");
+  const pacienteInput = document.getElementById("paciente");
+  const medicoInput = document.getElementById("medico");
+  const servicoInput = document.getElementById("servico");
+  const dataInput = document.getElementById("data");
+  const horarioInput = document.getElementById("horario");
+  const statusInput = document.getElementById("status");
+  const observacaoInput = document.getElementById("observacao");
+  const mensagemDashboard = document.getElementById("mensagemDashboard");
+
+  let agendamentos = [];
+
+  nomeClinica.textContent = session.clinic || "Clínica Vida+";
+  nomeUsuario.textContent = `${session.name || "Administrador"} • ${session.role || "Acesso local"}`;
+  dataInput.min = obterDataLocal();
 
   carregarAgendamentos();
-});
 
-// Logout
-btnSair.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    window.location.href = "index.html";
-  } catch (error) {
-    console.error("Erro ao sair:", error);
-    alert("Não foi possível sair. Tente novamente.");
-  }
-});
-
-// Cadastrar agendamento
-formAgendamento.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const paciente = pacienteInput.value.trim();
-  const medico = medicoInput.value.trim();
-  const servico = servicoInput.value.trim();
-  const data = dataInput.value;
-  const horario = horarioInput.value;
-  const status = statusInput.value;
-  const observacao = observacaoInput.value.trim();
-
-  mensagemDashboard.textContent = "";
-
-  if (!paciente || !medico || !servico || !data || !horario || !status) {
-    mostrarMensagem("Preencha todos os campos obrigatórios.", "erro");
-    return;
-  }
-
-  const medicoOcupado = agendamentos.some((agendamento) => {
-    return (
-      agendamento.medico.toLowerCase() === medico.toLowerCase() &&
-      agendamento.data === data &&
-      agendamento.horario === horario
-    );
+  btnSair.addEventListener("click", () => {
+    storage.logout();
+    window.location.replace("index.html");
   });
 
-  if (medicoOcupado) {
-    mostrarMensagem("Esse médico já possui agendamento nesse dia e horário.", "erro");
-    return;
-  }
-
-  try {
-    await addDoc(collection(db, "agendamentos"), {
-      paciente,
-      medico,
-      servico,
-      data,
-      horario,
-      status,
-      observacao,
-      criadoEm: serverTimestamp()
-    });
-
-    formAgendamento.reset();
-    mostrarMensagem("Agendamento cadastrado com sucesso.", "sucesso");
-
-    await carregarAgendamentos();
-  } catch (error) {
-    console.error("Erro ao cadastrar agendamento:", error);
-    mostrarMensagem("Erro ao cadastrar agendamento. Tente novamente.", "erro");
-  }
-});
-
-// Carregar agendamentos do Firestore
-async function carregarAgendamentos() {
-  try {
-    const q = query(
-      collection(db, "agendamentos"),
-      orderBy("data", "asc"),
-      orderBy("horario", "asc")
+  btnRestaurarDemo.addEventListener("click", () => {
+    const confirmar = window.confirm(
+      "Restaurar os agendamentos de demonstração? Os dados cadastrados neste navegador serão substituídos."
     );
 
-    const resultado = await getDocs(q);
+    if (!confirmar) {
+      return;
+    }
 
-    agendamentos = [];
-
-    resultado.forEach((documento) => {
-      agendamentos.push({
-        id: documento.id,
-        ...documento.data()
-      });
-    });
-
+    agendamentos = storage.resetDemoData();
     renderizarAgendamentos();
-  } catch (error) {
-    console.error("Erro ao carregar agendamentos:", error);
-
-    listaAgendamentos.innerHTML = `
-      <div class="empty-state">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <h3>Erro ao carregar agendamentos</h3>
-        <p>Verifique sua conexão com o Firebase.</p>
-      </div>
-    `;
-  }
-}
-
-// Renderizar agendamentos na tela
-function renderizarAgendamentos() {
-  const termoBusca = buscarAgendamento.value.trim().toLowerCase();
-  const dataSelecionada = filtroData.value;
-  const statusSelecionado = filtroStatus.value;
-
-  let agendamentosFiltrados = agendamentos.filter((agendamento) => {
-    const paciente = agendamento.paciente?.toLowerCase() || "";
-    const medico = agendamento.medico?.toLowerCase() || "";
-    const servico = agendamento.servico?.toLowerCase() || "";
-
-    const combinaBusca =
-      paciente.includes(termoBusca) ||
-      medico.includes(termoBusca) ||
-      servico.includes(termoBusca);
-
-    const combinaData =
-      !dataSelecionada || agendamento.data === dataSelecionada;
-
-    const combinaStatus =
-      !statusSelecionado || agendamento.status === statusSelecionado;
-
-    return combinaBusca && combinaData && combinaStatus;
+    mostrarMensagem("Dados de demonstração restaurados.", "sucesso");
   });
 
-  totalAgendamentos.textContent = `${agendamentosFiltrados.length} agendamento${
-    agendamentosFiltrados.length !== 1 ? "s" : ""
-  }`;
+  formAgendamento.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-  if (agendamentosFiltrados.length === 0) {
-    listaAgendamentos.innerHTML = `
-      <div class="empty-state">
-        <i class="fa-regular fa-calendar-check"></i>
-        <h3>Nenhum agendamento encontrado</h3>
-        <p>Cadastre um novo agendamento ou ajuste os filtros.</p>
-      </div>
-    `;
-    return;
-  }
+    const novoAgendamento = {
+      paciente: pacienteInput.value.trim(),
+      medico: medicoInput.value.trim(),
+      servico: servicoInput.value.trim(),
+      data: dataInput.value,
+      horario: horarioInput.value,
+      status: statusInput.value,
+      observacao: observacaoInput.value.trim()
+    };
 
-  listaAgendamentos.innerHTML = "";
-
-  agendamentosFiltrados.forEach((agendamento) => {
-    const card = document.createElement("div");
-    card.className = "appointment-card";
-
-    card.innerHTML = `
-      <div class="appointment-info">
-        <h3>${agendamento.paciente}</h3>
-
-        <p>
-          <strong>Médico:</strong> ${agendamento.medico}
-        </p>
-
-        <p>
-          <strong>Serviço:</strong> ${agendamento.servico}
-        </p>
-
-        <p>
-          <strong>Data:</strong> ${formatarData(agendamento.data)}
-          às ${agendamento.horario}
-        </p>
-
-        ${
-          agendamento.observacao
-            ? `<p><strong>Observação:</strong> ${agendamento.observacao}</p>`
-            : ""
-        }
-      </div>
-
-      <div class="appointment-actions">
-        <span class="status-badge ${classeStatus(agendamento.status)}">
-          ${agendamento.status}
-        </span>
-
-        <div class="card-buttons">
-          <button
-            type="button"
-            class="btn-small btn-delete"
-            title="Excluir agendamento"
-            data-id="${agendamento.id}"
-          >
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      </div>
-    `;
-
-    listaAgendamentos.appendChild(card);
-  });
-
-  ativarBotoesExcluir();
-}
-
-// Excluir agendamento
-function ativarBotoesExcluir() {
-  const botoesExcluir = document.querySelectorAll(".btn-delete");
-
-  botoesExcluir.forEach((botao) => {
-    botao.addEventListener("click", async () => {
-      const id = botao.getAttribute("data-id");
-
-      const confirmar = confirm("Tem certeza que deseja excluir este agendamento?");
-
-      if (!confirmar) {
-        return;
-      }
-
-      try {
-        await deleteDoc(doc(db, "agendamentos", id));
-        await carregarAgendamentos();
-      } catch (error) {
-        console.error("Erro ao excluir agendamento:", error);
-        alert("Não foi possível excluir o agendamento.");
-      }
-    });
-  });
-}
-
-// Filtros
-buscarAgendamento.addEventListener("input", renderizarAgendamentos);
-filtroData.addEventListener("change", renderizarAgendamentos);
-filtroStatus.addEventListener("change", renderizarAgendamentos);
-
-btnLimparFiltros.addEventListener("click", () => {
-  buscarAgendamento.value = "";
-  filtroData.value = "";
-  filtroStatus.value = "";
-  renderizarAgendamentos();
-});
-
-// Mensagem do formulário
-function mostrarMensagem(texto, tipo) {
-  mensagemDashboard.textContent = texto;
-
-  if (tipo === "erro") {
-    mensagemDashboard.style.color = "#dc2626";
-  } else {
-    mensagemDashboard.style.color = "#1f9d63";
-  }
-
-  setTimeout(() => {
     mensagemDashboard.textContent = "";
-  }, 3500);
-}
 
-// Formatar data
-function formatarData(data) {
-  if (!data) {
-    return "";
+    if (
+      !novoAgendamento.paciente ||
+      !novoAgendamento.medico ||
+      !novoAgendamento.servico ||
+      !novoAgendamento.data ||
+      !novoAgendamento.horario ||
+      !novoAgendamento.status
+    ) {
+      mostrarMensagem("Preencha todos os campos obrigatórios.", "erro");
+      return;
+    }
+
+    const medicoOcupado = agendamentos.some(
+      (item) =>
+        String(item.medico).toLowerCase() === novoAgendamento.medico.toLowerCase() &&
+        item.data === novoAgendamento.data &&
+        item.horario === novoAgendamento.horario
+    );
+
+    if (medicoOcupado) {
+      mostrarMensagem("Esse médico já possui agendamento nesse dia e horário.", "erro");
+      return;
+    }
+
+    storage.addAppointment(novoAgendamento);
+    formAgendamento.reset();
+    dataInput.min = obterDataLocal();
+    statusInput.value = "Pendente";
+    mostrarMensagem("Agendamento cadastrado com sucesso.", "sucesso");
+    carregarAgendamentos();
+  });
+
+  buscarAgendamento.addEventListener("input", renderizarAgendamentos);
+  filtroData.addEventListener("change", renderizarAgendamentos);
+  filtroStatus.addEventListener("change", renderizarAgendamentos);
+
+  btnLimparFiltros.addEventListener("click", () => {
+    buscarAgendamento.value = "";
+    filtroData.value = "";
+    filtroStatus.value = "";
+    renderizarAgendamentos();
+  });
+
+  function carregarAgendamentos() {
+    agendamentos = storage.getAppointments();
+    renderizarAgendamentos();
   }
 
-  const partes = data.split("-");
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
+  function renderizarAgendamentos() {
+    const termoBusca = buscarAgendamento.value.trim().toLowerCase();
+    const dataSelecionada = filtroData.value;
+    const statusSelecionado = filtroStatus.value;
 
-// Classe do status
-function classeStatus(status) {
-  if (status === "Pendente") {
-    return "status-pendente";
+    const filtrados = agendamentos.filter((agendamento) => {
+      const paciente = String(agendamento.paciente || "").toLowerCase();
+      const medico = String(agendamento.medico || "").toLowerCase();
+      const servico = String(agendamento.servico || "").toLowerCase();
+
+      const combinaBusca =
+        paciente.includes(termoBusca) ||
+        medico.includes(termoBusca) ||
+        servico.includes(termoBusca);
+      const combinaData = !dataSelecionada || agendamento.data === dataSelecionada;
+      const combinaStatus = !statusSelecionado || agendamento.status === statusSelecionado;
+
+      return combinaBusca && combinaData && combinaStatus;
+    });
+
+    totalAgendamentos.textContent = `${filtrados.length} agendamento${
+      filtrados.length !== 1 ? "s" : ""
+    }`;
+
+    if (filtrados.length === 0) {
+      listaAgendamentos.innerHTML = `
+        <div class="empty-state">
+          <i class="fa-regular fa-calendar-check"></i>
+          <h3>Nenhum agendamento encontrado</h3>
+          <p>Cadastre um novo agendamento ou ajuste os filtros.</p>
+        </div>
+      `;
+      return;
+    }
+
+    listaAgendamentos.innerHTML = filtrados.map(criarCard).join("");
+
+    listaAgendamentos.querySelectorAll(".btn-delete").forEach((botao) => {
+      botao.addEventListener("click", () => excluirAgendamento(botao.dataset.id));
+    });
   }
 
-  if (status === "Confirmado") {
-    return "status-confirmado";
+  function criarCard(agendamento) {
+    const paciente = escaparHtml(agendamento.paciente);
+    const medico = escaparHtml(agendamento.medico);
+    const servico = escaparHtml(agendamento.servico);
+    const observacao = escaparHtml(agendamento.observacao);
+    const status = escaparHtml(agendamento.status);
+    const id = escaparHtml(agendamento.id);
+
+    return `
+      <article class="appointment-card">
+        <div class="appointment-info">
+          <h3>${paciente}</h3>
+          <p><strong>Médico:</strong> ${medico}</p>
+          <p><strong>Serviço:</strong> ${servico}</p>
+          <p><strong>Data:</strong> ${formatarData(agendamento.data)} às ${escaparHtml(
+            agendamento.horario
+          )}</p>
+          ${observacao ? `<p><strong>Observação:</strong> ${observacao}</p>` : ""}
+        </div>
+
+        <div class="appointment-actions">
+          <span class="status-badge ${classeStatus(agendamento.status)}">${status}</span>
+          <div class="card-buttons">
+            <button
+              type="button"
+              class="btn-small btn-delete"
+              title="Excluir agendamento"
+              aria-label="Excluir agendamento de ${paciente}"
+              data-id="${id}"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
   }
 
-  if (status === "Em atendimento") {
-    return "status-em-atendimento";
+  function excluirAgendamento(id) {
+    const confirmar = window.confirm("Tem certeza que deseja excluir este agendamento?");
+
+    if (!confirmar) {
+      return;
+    }
+
+    if (!storage.deleteAppointment(id)) {
+      mostrarMensagem("Não foi possível localizar o agendamento.", "erro");
+      return;
+    }
+
+    carregarAgendamentos();
+    mostrarMensagem("Agendamento excluído.", "sucesso");
   }
 
-  if (status === "Finalizado") {
-    return "status-finalizado";
+  function mostrarMensagem(texto, tipo) {
+    mensagemDashboard.textContent = texto;
+    mensagemDashboard.dataset.tipo = tipo;
+
+    window.setTimeout(() => {
+      mensagemDashboard.textContent = "";
+      delete mensagemDashboard.dataset.tipo;
+    }, 3500);
   }
 
-  if (status === "Cancelado") {
-    return "status-cancelado";
+  function formatarData(data) {
+    if (!data || !/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+      return "Data não informada";
+    }
+
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
   }
 
-  return "status-pendente";
-}
+  function classeStatus(status) {
+    const classes = {
+      Pendente: "status-pendente",
+      Confirmado: "status-confirmado",
+      "Em atendimento": "status-em-atendimento",
+      Finalizado: "status-finalizado",
+      Cancelado: "status-cancelado"
+    };
+
+    return classes[status] || "status-pendente";
+  }
+
+  function escaparHtml(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function obterDataLocal() {
+    const agora = new Date();
+    const ano = agora.getFullYear();
+    const mes = String(agora.getMonth() + 1).padStart(2, "0");
+    const dia = String(agora.getDate()).padStart(2, "0");
+    return `${ano}-${mes}-${dia}`;
+  }
+})();
