@@ -5,24 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClinAgenda | Login</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Ícones Font Awesome -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+  />
 </head>
 <body class="login-page">
-
   <main class="login-container">
-
-    <!-- LADO ESQUERDO: ÁREA VISUAL -->
     <section class="login-visual">
       <div class="visual-card">
         <div class="visual-title">
           <div class="visual-main-icon">
             <i class="fa-solid fa-wave-square"></i>
           </div>
-
           <h2>Excelência em<br />Gestão</h2>
         </div>
 
@@ -33,71 +28,35 @@
         </p>
 
         <div class="visual-icons">
-          <span>
-            <i class="fa-regular fa-calendar-days"></i>
-          </span>
-
-          <span>
-            <i class="fa-solid fa-notes-medical"></i>
-          </span>
-
-          <span>
-            <i class="fa-solid fa-shield-halved"></i>
-          </span>
+          <span><i class="fa-regular fa-calendar-days"></i></span>
+          <span><i class="fa-solid fa-notes-medical"></i></span>
+          <span><i class="fa-solid fa-shield-halved"></i></span>
         </div>
       </div>
     </section>
 
-
-    <!-- LADO DIREITO: FORMULÁRIO DE LOGIN -->
     <section class="login-content">
       <div class="login-box">
         <div class="brand">
-
           <div class="brand-top">
             <div class="brand-icon">
               <i class="fa-solid fa-shield-heart"></i>
             </div>
-
             <h1>ClinAgenda</h1>
           </div>
-
-          <span class="brand-subtitle">
-            SISTEMA INTERNO DE AGENDAMENTO
-          </span>
-
+          <span class="brand-subtitle">SISTEMA INTERNO DE AGENDAMENTO</span>
         </div>
 
         <div class="login-header">
           <h2>Acessar painel</h2>
-          <p>Entre com o acesso de demonstração para testar o sistema.</p>
-        </div>
-
-        <div class="demo-access" aria-label="Credenciais de demonstração">
-          <div class="demo-access-title">
-            <i class="fa-solid fa-flask"></i>
-            <strong>Acesso para demonstração</strong>
-          </div>
-
-          <div class="demo-credentials">
-            <span><strong>E-mail:</strong> admin@clinagenda.com.br</span>
-            <span><strong>Senha:</strong> ClinAgenda@2026</span>
-          </div>
-
-          <button type="button" id="btnPreencherDemo" class="btn-demo-fill">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-            Preencher acesso
-          </button>
+          <p>Entre com suas credenciais para acessar o sistema.</p>
         </div>
 
         <form id="loginForm" class="login-form">
-
           <div class="form-group">
             <label for="email">E-mail</label>
-
             <div class="input-group">
               <i class="fa-regular fa-envelope"></i>
-
               <input
                 type="email"
                 id="email"
@@ -111,10 +70,8 @@
 
           <div class="form-group">
             <label for="senha">Senha</label>
-
             <div class="input-group">
               <i class="fa-solid fa-lock"></i>
-
               <input
                 type="password"
                 id="senha"
@@ -123,7 +80,6 @@
                 autocomplete="current-password"
                 required
               />
-
               <button
                 type="button"
                 class="password-toggle"
@@ -141,21 +97,12 @@
           </button>
 
           <p id="mensagemErro" class="mensagem-erro"></p>
-
         </form>
-
-      </div>
-
-      <div class="login-footer">
-        <i class="fa-solid fa-shield-halved"></i>
-        <span>Projeto demonstrativo para portfólio</span>
       </div>
     </section>
   </main>
 
-  <!-- Armazenamento e autenticação local para demonstração -->
   <script src="storage.js"></script>
   <script src="login.js"></script>
-
 </body>
 </html>

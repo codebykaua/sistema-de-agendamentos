@@ -9,7 +9,7 @@
 
   const DEMO_USER = Object.freeze({
     id: "user-demo-admin",
-    name: "Administrador de demonstração",
+    name: "Administrador",
     clinic: "Clínica Vida+",
     role: "Administrador",
     email: "admin@clinagenda.com.br",
@@ -107,7 +107,7 @@
         data: localDate(3),
         horario: "16:00",
         status: "Finalizado",
-        observacao: "Atendimento de demonstração.",
+        observacao: "Atendimento agendado.",
         criadoEm: new Date().toISOString()
       }
     ];
@@ -200,6 +200,28 @@
     return appointment;
   }
 
+  function updateAppointment(id, updates) {
+    const appointments = read(KEYS.appointments, []);
+    const index = appointments.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      return null;
+    }
+
+    appointments[index] = {
+      ...appointments[index],
+      ...updates,
+      atualizadoEm: new Date().toISOString()
+    };
+
+    write(KEYS.appointments, appointments);
+    return appointments[index];
+  }
+
+  function updateAppointmentStatus(id, status) {
+    return updateAppointment(id, { status: String(status || "Pendente") });
+  }
+
   function deleteAppointment(id) {
     const appointments = read(KEYS.appointments, []);
     const updated = appointments.filter((item) => item.id !== id);
@@ -220,6 +242,8 @@
     logout,
     getAppointments,
     addAppointment,
+    updateAppointment,
+    updateAppointmentStatus,
     deleteAppointment,
     resetDemoData,
     demoCredentials: Object.freeze({

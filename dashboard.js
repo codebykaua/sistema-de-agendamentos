@@ -2,6 +2,13 @@
   "use strict";
 
   const storage = window.ClinAgendaStorage;
+  const STATUS_OPTIONS = [
+    "Pendente",
+    "Confirmado",
+    "Em atendimento",
+    "Finalizado",
+    "Cancelado"
+  ];
 
   if (!storage || !storage.initialize()) {
     alert("O navegador bloqueou o armazenamento local deste projeto.");
@@ -18,14 +25,16 @@
 
   const btnSair = document.getElementById("btnSair");
   const btnRestaurarDemo = document.getElementById("btnRestaurarDemo");
+  const btnAbrirModal = document.getElementById("btnAbrirModal");
+  const btnFecharModal = document.getElementById("btnFecharModal");
+  const btnCancelarModal = document.getElementById("btnCancelarModal");
+  const modalAgendamento = document.getElementById("modalAgendamento");
   const totalAgendamentos = document.getElementById("totalAgendamentos");
   const buscarAgendamento = document.getElementById("buscarAgendamento");
   const filtroData = document.getElementById("filtroData");
   const filtroStatus = document.getElementById("filtroStatus");
   const btnLimparFiltros = document.getElementById("btnLimparFiltros");
   const listaAgendamentos = document.getElementById("listaAgendamentos");
-  const nomeClinica = document.getElementById("nomeClinica");
-  const nomeUsuario = document.getElementById("nomeUsuario");
 
   const formAgendamento = document.getElementById("formAgendamento");
   const pacienteInput = document.getElementById("paciente");
@@ -39,10 +48,7 @@
 
   let agendamentos = [];
 
-  nomeClinica.textContent = session.clinic || "Clínica Vida+";
-  nomeUsuario.textContent = `${session.name || "Administrador"} • ${session.role || "Acesso local"}`;
   dataInput.min = obterDataLocal();
-
   carregarAgendamentos();
 
   btnSair.addEventListener("click", () => {
@@ -52,7 +58,7 @@
 
   btnRestaurarDemo.addEventListener("click", () => {
     const confirmar = window.confirm(
-      "Restaurar os agendamentos de demonstração? Os dados cadastrados neste navegador serão substituídos."
+      "Restaurar os dados iniciais? Os agendamentos cadastrados neste navegador serão substituídos."
     );
 
     if (!confirmar) {
@@ -61,7 +67,23 @@
 
     agendamentos = storage.resetDemoData();
     renderizarAgendamentos();
-    mostrarMensagem("Dados de demonstração restaurados.", "sucesso");
+    mostrarMensagem("Dados restaurados com sucesso.", "sucesso");
+  });
+
+  btnAbrirModal.addEventListener("click", abrirModal);
+  btnFecharModal.addEventListener("click", fecharModal);
+  btnCancelarModal.addEventListener("click", fecharModal);
+
+  modalAgendamento.addEventListener("click", (event) => {
+    if (event.target === modalAgendamento) {
+      fecharModal();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modalAgendamento.classList.contains("is-open")) {
+      fecharModal();
+    }
   });
 
   formAgendamento.addEventListener("submit", (event) => {
@@ -76,8 +98,6 @@
       status: statusInput.value,
       observacao: observacaoInput.value.trim()
     };
-
-    mensagemDashboard.textContent = "";
 
     if (
       !novoAgendamento.paciente ||
@@ -107,8 +127,9 @@
     formAgendamento.reset();
     dataInput.min = obterDataLocal();
     statusInput.value = "Pendente";
-    mostrarMensagem("Agendamento cadastrado com sucesso.", "sucesso");
+    fecharModal();
     carregarAgendamentos();
+    mostrarMensagem("Agendamento cadastrado com sucesso.", "sucesso");
   });
 
   buscarAgendamento.addEventListener("input", renderizarAgendamentos);
@@ -121,6 +142,22 @@
     filtroStatus.value = "";
     renderizarAgendamentos();
   });
+
+  function abrirModal() {
+    formAgendamento.reset();
+    dataInput.min = obterDataLocal();
+    statusInput.value = "Pendente";
+    modalAgendamento.classList.add("is-open");
+    modalAgendamento.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+    pacienteInput.focus();
+  }
+
+  function fecharModal() {
+    modalAgendamento.classList.remove("is-open");
+    modalAgendamento.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+  }
 
   function carregarAgendamentos() {
     agendamentos = storage.getAppointments();
@@ -156,7 +193,7 @@
         <div class="empty-state">
           <i class="fa-regular fa-calendar-check"></i>
           <h3>Nenhum agendamento encontrado</h3>
-          <p>Cadastre um novo agendamento ou ajuste os filtros.</p>
+          <p>Clique em “Cadastrar agendamento” ou ajuste os filtros.</p>
         </div>
       `;
       return;
@@ -167,6 +204,10 @@
     listaAgendamentos.querySelectorAll(".btn-delete").forEach((botao) => {
       botao.addEventListener("click", () => excluirAgendamento(botao.dataset.id));
     });
+
+    listaAgendamentos.querySelectorAll(".status-select-inline").forEach((select) => {
+      select.addEventListener("change", () => atualizarStatus(select.dataset.id, select.value));
+    });
   }
 
   function criarCard(agendamento) {
@@ -174,7 +215,6 @@
     const medico = escaparHtml(agendamento.medico);
     const servico = escaparHtml(agendamento.servico);
     const observacao = escaparHtml(agendamento.observacao);
-    const status = escaparHtml(agendamento.status);
     const id = escaparHtml(agendamento.id);
 
     return `
@@ -190,7 +230,13 @@
         </div>
 
         <div class="appointment-actions">
-          <span class="status-badge ${classeStatus(agendamento.status)}">${status}</span>
+          <div class="appointment-status-editor">
+            <label for="status-${id}">Status</label>
+            <select id="status-${id}" class="status-select-inline ${classeStatus(agendamento.status)}" data-id="${id}">
+              ${renderizarOpcoesStatus(agendamento.status)}
+            </select>
+          </div>
+
           <div class="card-buttons">
             <button
               type="button"
@@ -205,6 +251,26 @@
         </div>
       </article>
     `;
+  }
+
+  function renderizarOpcoesStatus(statusAtual) {
+    return STATUS_OPTIONS.map((status) => {
+      const selected = status === statusAtual ? "selected" : "";
+      return `<option value="${escaparHtml(status)}" ${selected}>${escaparHtml(status)}</option>`;
+    }).join("");
+  }
+
+  function atualizarStatus(id, status) {
+    const atualizado = storage.updateAppointmentStatus(id, status);
+
+    if (!atualizado) {
+      mostrarMensagem("Não foi possível atualizar o status.", "erro");
+      carregarAgendamentos();
+      return;
+    }
+
+    carregarAgendamentos();
+    mostrarMensagem("Status atualizado com sucesso.", "sucesso");
   }
 
   function excluirAgendamento(id) {
@@ -227,7 +293,8 @@
     mensagemDashboard.textContent = texto;
     mensagemDashboard.dataset.tipo = tipo;
 
-    window.setTimeout(() => {
+    window.clearTimeout(mostrarMensagem._timeoutId);
+    mostrarMensagem._timeoutId = window.setTimeout(() => {
       mensagemDashboard.textContent = "";
       delete mensagemDashboard.dataset.tipo;
     }, 3500);

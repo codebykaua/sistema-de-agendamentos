@@ -3,51 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>ClinAgenda | Dashboard</title>
-
-  <!-- CSS principal -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Ícones Font Awesome -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   />
 </head>
 <body class="dashboard-page">
-
   <main class="dashboard-container">
-
-    <!-- TOPO DO SISTEMA -->
     <header class="dashboard-header">
-
       <div class="dashboard-brand">
         <div class="dashboard-logo">
           <i class="fa-solid fa-shield-heart"></i>
         </div>
-
         <div>
           <h1>ClinAgenda</h1>
-          <span>Demonstração de sistema interno de agendamentos</span>
         </div>
       </div>
 
       <div class="dashboard-user">
-        <div class="local-storage-badge" title="Os dados desta demonstração ficam neste navegador">
-          <i class="fa-solid fa-hard-drive"></i>
-          Dados locais
-        </div>
-
-        <div class="user-info">
-          <strong id="nomeClinica">Clínica Vida+</strong>
-          <span id="nomeUsuario">Painel administrativo</span>
-        </div>
-
         <div class="header-actions">
           <button type="button" id="btnRestaurarDemo" class="btn-reset-demo">
             <i class="fa-solid fa-rotate-left"></i>
-            Restaurar demo
+            Restaurar dados
           </button>
 
           <button type="button" id="btnSair" class="btn-logout">
@@ -56,32 +35,28 @@
           </button>
         </div>
       </div>
-
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <section class="dashboard-main">
-
-      <!-- ÁREA ESQUERDA: BUSCA E LISTA -->
-      <section class="appointments-area">
-
-        <div class="section-title">
+    <section class="dashboard-main single-column">
+      <section class="appointments-area appointments-area-full">
+        <div class="section-title section-title-actions">
           <div>
             <h2>Agendamentos</h2>
-            <p>Pesquise e acompanhe os atendimentos da clínica.</p>
+            <p>Pesquise, acompanhe e atualize os atendimentos da clínica.</p>
           </div>
 
-          <span id="totalAgendamentos" class="total-badge">
-            0 agendamentos
-          </span>
+          <div class="section-actions">
+            <span id="totalAgendamentos" class="total-badge">0 agendamentos</span>
+            <button type="button" id="btnAbrirModal" class="btn-primary-action">
+              <i class="fa-solid fa-calendar-plus"></i>
+              Cadastrar agendamento
+            </button>
+          </div>
         </div>
 
-        <!-- FILTROS -->
         <div class="filters-card">
-
           <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-
             <input
               type="text"
               id="buscarAgendamento"
@@ -90,7 +65,6 @@
           </div>
 
           <div class="filters-row">
-
             <div class="filter-group">
               <label for="filtroData">Data</label>
               <input type="date" id="filtroData" />
@@ -112,137 +86,116 @@
               <i class="fa-solid fa-filter-circle-xmark"></i>
               Limpar
             </button>
-
           </div>
 
+          <p id="mensagemDashboard" class="mensagem-dashboard"></p>
         </div>
 
-        <!-- LISTA DE AGENDAMENTOS -->
         <div id="listaAgendamentos" class="appointments-list">
-
-          <!-- Os agendamentos serão carregados pelo JavaScript -->
-
           <div class="empty-state">
             <i class="fa-regular fa-calendar-check"></i>
             <h3>Nenhum agendamento encontrado</h3>
-            <p>Cadastre um novo agendamento no formulário ao lado.</p>
+            <p>Clique em “Cadastrar agendamento” para adicionar um novo atendimento.</p>
           </div>
-
         </div>
-
       </section>
+    </section>
+  </main>
 
-      <!-- ÁREA DIREITA: NOVO AGENDAMENTO -->
-      <aside class="new-appointment-card">
+  <div id="modalAgendamento" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTituloAgendamento">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTituloAgendamento">Cadastrar agendamento</h2>
+          <p>Preencha os dados do atendimento.</p>
+        </div>
 
-        <div class="form-title">
-          <div>
-            <h2>Novo agendamento</h2>
-            <p>Preencha os dados do atendimento.</p>
+        <button type="button" id="btnFecharModal" class="btn-modal-close" aria-label="Fechar janela">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="formAgendamento" class="appointment-form modal-form">
+        <div class="form-group">
+          <label for="paciente">Paciente</label>
+          <input
+            type="text"
+            id="paciente"
+            name="paciente"
+            placeholder="Nome do paciente"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="medico">Médico</label>
+          <input
+            type="text"
+            id="medico"
+            name="medico"
+            placeholder="Nome do médico"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="servico">Serviço</label>
+          <input
+            type="text"
+            id="servico"
+            name="servico"
+            placeholder="Ex: Consulta de rotina"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="data">Data</label>
+            <input type="date" id="data" name="data" required />
           </div>
 
-          <div class="form-icon">
-            <i class="fa-solid fa-calendar-plus"></i>
+          <div class="form-group">
+            <label for="horario">Horário</label>
+            <input type="time" id="horario" name="horario" required />
           </div>
         </div>
 
-        <form id="formAgendamento" class="appointment-form">
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status" required>
+            <option value="Pendente">Pendente</option>
+            <option value="Confirmado">Confirmado</option>
+            <option value="Em atendimento">Em atendimento</option>
+            <option value="Finalizado">Finalizado</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label for="paciente">Paciente</label>
-            <input
-              type="text"
-              id="paciente"
-              name="paciente"
-              placeholder="Nome do paciente"
-              required
-            />
-          </div>
+        <div class="form-group">
+          <label for="observacao">Observação</label>
+          <textarea
+            id="observacao"
+            name="observacao"
+            placeholder="Observações sobre o atendimento"
+          ></textarea>
+        </div>
 
-          <div class="form-group">
-            <label for="medico">Médico</label>
-            <input
-              type="text"
-              id="medico"
-              name="medico"
-              placeholder="Nome do médico"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="servico">Serviço</label>
-            <input
-              type="text"
-              id="servico"
-              name="servico"
-              placeholder="Ex: Consulta de rotina"
-              required
-            />
-          </div>
-
-          <div class="form-row">
-
-            <div class="form-group">
-              <label for="data">Data</label>
-              <input
-                type="date"
-                id="data"
-                name="data"
-                required
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="horario">Horário</label>
-              <input
-                type="time"
-                id="horario"
-                name="horario"
-                required
-              />
-            </div>
-
-          </div>
-
-          <div class="form-group">
-            <label for="status">Status</label>
-            <select id="status" name="status" required>
-              <option value="Pendente">Pendente</option>
-              <option value="Confirmado">Confirmado</option>
-              <option value="Em atendimento">Em atendimento</option>
-              <option value="Finalizado">Finalizado</option>
-              <option value="Cancelado">Cancelado</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="observacao">Observação</label>
-            <textarea
-              id="observacao"
-              name="observacao"
-              placeholder="Observações sobre o atendimento"
-            ></textarea>
-          </div>
+        <div class="modal-actions">
+          <button type="button" id="btnCancelarModal" class="btn-secondary-action">
+            Cancelar
+          </button>
 
           <button type="submit" class="btn-save">
             <i class="fa-solid fa-check"></i>
             Confirmar agendamento
           </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-          <p id="mensagemDashboard" class="mensagem-dashboard"></p>
-
-        </form>
-
-      </aside>
-
-    </section>
-
-  </main>
-
-  <!-- Banco local e lógica da dashboard -->
   <script src="storage.js"></script>
   <script src="dashboard.js"></script>
-
 </body>
 </html>

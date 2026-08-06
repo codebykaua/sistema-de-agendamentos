@@ -7,7 +7,6 @@
   const senhaInput = document.getElementById("senha");
   const mensagemErro = document.getElementById("mensagemErro");
   const toggleSenha = document.getElementById("toggleSenha");
-  const btnPreencherDemo = document.getElementById("btnPreencherDemo");
 
   if (!storage || !storage.initialize()) {
     mensagemErro.textContent =
@@ -27,13 +26,6 @@
     toggleSenha.innerHTML = hidden
       ? '<i class="fa-regular fa-eye"></i>'
       : '<i class="fa-regular fa-eye-slash"></i>';
-  });
-
-  btnPreencherDemo.addEventListener("click", () => {
-    emailInput.value = storage.demoCredentials.email;
-    senhaInput.value = storage.demoCredentials.password;
-    mensagemErro.textContent = "";
-    emailInput.focus();
   });
 
   loginForm.addEventListener("submit", (event) => {

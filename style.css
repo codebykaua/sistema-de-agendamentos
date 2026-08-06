@@ -858,93 +858,50 @@ a {
     align-items: flex-start;
   }
 }
+
 /* =========================
-   MODO DEMONSTRAÇÃO LOCAL
+   AJUSTES DO PAINEL
 ========================= */
 
-.demo-access {
-  margin: -14px 0 24px;
-  padding: 15px;
-  border: 1px solid #cfe0ee;
-  border-radius: 12px;
-  background: #f3f8fc;
+.dashboard-main.single-column {
+  display: block;
 }
 
-.demo-access-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--azul-principal);
-  font-size: 14px;
-  margin-bottom: 9px;
-}
-
-.demo-credentials {
-  display: grid;
-  gap: 4px;
-  color: #475569;
-  font-size: 13px;
-  overflow-wrap: anywhere;
-}
-
-.btn-demo-fill {
+.appointments-area-full {
   width: 100%;
-  min-height: 38px;
-  margin-top: 12px;
-  border: 1px solid #b7cfe1;
-  border-radius: 9px;
-  background: var(--branco);
-  color: var(--azul-principal);
-  font-size: 13px;
-  font-weight: 700;
+}
+
+.section-title-actions {
+  gap: 18px;
+}
+
+.section-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: 0.2s ease;
-}
-
-.btn-demo-fill:hover {
-  border-color: var(--azul-principal);
-  background: #e8f3fb;
-}
-
-.btn-login:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-  transform: none;
-}
-
-.local-storage-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 11px;
-  border-radius: 999px;
-  background: #edf7f2;
-  color: #18754c;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
 }
 
 .btn-reset-demo,
-.btn-logout {
-  min-height: 40px;
-  border-radius: 11px;
-  padding: 0 13px;
+.btn-logout,
+.btn-primary-action,
+.btn-secondary-action {
+  min-height: 44px;
+  border-radius: 12px;
+  padding: 0 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 14px;
   transition: 0.2s ease;
 }
 
@@ -959,6 +916,45 @@ a {
   color: var(--azul-principal);
 }
 
+.btn-logout {
+  border: none;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.btn-logout:hover {
+  background: var(--vermelho-claro);
+  color: var(--vermelho);
+}
+
+.btn-primary-action {
+  border: none;
+  background: var(--azul-principal);
+  color: var(--branco);
+}
+
+.btn-primary-action:hover {
+  background: #05395f;
+  transform: translateY(-1px);
+}
+
+.btn-secondary-action {
+  border: 1px solid #d7dee8;
+  background: #ffffff;
+  color: #475569;
+}
+
+.btn-secondary-action:hover {
+  background: #f8fafc;
+}
+
+.mensagem-dashboard {
+  min-height: 20px;
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--verde);
+}
+
 .mensagem-dashboard[data-tipo="erro"] {
   color: var(--vermelho);
 }
@@ -967,28 +963,197 @@ a {
   color: var(--verde);
 }
 
+.appointment-card {
+  align-items: flex-start;
+}
+
+.appointment-actions {
+  min-width: 215px;
+  gap: 14px;
+}
+
+.appointment-status-editor {
+  width: 100%;
+}
+
+.appointment-status-editor label {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.status-select-inline {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0 12px;
+  outline: none;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.status-select-inline:focus {
+  border-color: var(--azul-principal);
+  box-shadow: 0 0 0 4px rgba(7, 68, 111, 0.08);
+}
+
+.modal-open {
+  overflow: hidden;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.is-open {
+  display: flex;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 620px;
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  background: var(--branco);
+  border-radius: 22px;
+  border: 1px solid #e5eaf0;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.modal-header h2 {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.modal-header p {
+  color: var(--cinza-texto);
+  font-size: 14px;
+}
+
+.btn-modal-close {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 18px;
+}
+
+.btn-modal-close:hover {
+  background: #e2e8f0;
+}
+
+.modal-form .form-group {
+  margin-bottom: 17px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.modal-actions .btn-save {
+  width: auto;
+  min-width: 220px;
+  margin-top: 0;
+  padding: 0 18px;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-main.single-column {
+    display: block;
+  }
+}
+
 @media (max-width: 900px) {
-  .dashboard-user {
-    width: 100%;
-    align-items: stretch;
+  .section-title {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
+  .section-actions,
   .header-actions {
     width: 100%;
+    justify-content: stretch;
   }
 
-  .btn-reset-demo,
-  .btn-logout {
+  .section-actions .total-badge,
+  .section-actions .btn-primary-action,
+  .header-actions .btn-reset-demo,
+  .header-actions .btn-logout {
     flex: 1;
   }
 }
 
-@media (max-width: 520px) {
-  .header-actions {
+@media (max-width: 760px) {
+  .dashboard-header,
+  .dashboard-user,
+  .appointment-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .appointment-actions {
+    width: 100%;
+    min-width: 0;
+    align-items: stretch;
+  }
+
+  .card-buttons {
+    justify-content: flex-end;
+  }
+
+  .modal-overlay {
+    padding: 14px;
+  }
+
+  .modal-card {
+    max-height: calc(100vh - 28px);
+    padding: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .header-actions,
+  .section-actions,
+  .modal-actions {
     flex-direction: column;
   }
 
-  .local-storage-badge {
-    white-space: normal;
+  .modal-actions .btn-save,
+  .modal-actions .btn-secondary-action,
+  .section-actions .btn-primary-action,
+  .header-actions .btn-reset-demo,
+  .header-actions .btn-logout {
+    width: 100%;
+  }
+
+  .section-actions .total-badge {
+    width: 100%;
+    text-align: center;
   }
 }
